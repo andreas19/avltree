@@ -170,3 +170,14 @@ func (n *tNode[T]) inorder(fn func(v T)) {
 		n.right.inorder(fn)
 	}
 }
+
+func (n *tNode[T]) clone(c *tNode[T]) {
+	if n.left != nil {
+		c.left = &tNode[T]{value: n.left.value, height: n.left.height}
+		n.left.clone(c.left)
+	}
+	if n.right != nil {
+		c.right = &tNode[T]{value: n.right.value, height: n.right.height}
+		n.right.clone(c.right)
+	}
+}

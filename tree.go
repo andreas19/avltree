@@ -88,3 +88,13 @@ func (t *Tree[T]) IsEmpty() bool {
 func (t *Tree[T]) Count() int {
 	return t.count
 }
+
+// Clone clones the tree.
+func (t *Tree[T]) Clone() *Tree[T] {
+	var root *tNode[T]
+	if t.root != nil {
+		root = &tNode[T]{value: t.root.value, height: t.root.height}
+		t.root.clone(root)
+	}
+	return &Tree[T]{root: root, cmp: t.cmp, nodups: t.nodups, count: t.count}
+}

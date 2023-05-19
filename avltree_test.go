@@ -21,10 +21,7 @@ func TestAdd(t *testing.T) {
 		{[]int{4, 3, 2, 2, 1}, []int{1, 2, 2, 3, 4}},
 	}
 	for i, test := range tests {
-		tree := New(CmpOrd[int], false)
-		for _, arg := range test.args {
-			tree.Add(arg)
-		}
+		tree := makeTree(false, test.args)
 		if got := tree.Slice(); !reflect.DeepEqual(got, test.want) {
 			t.Errorf("%d: got %v, want %v\n", i, got, test.want)
 		}
@@ -43,10 +40,7 @@ func TestAddNoDups(t *testing.T) {
 		{[]int{4, 3, 2, 2, 1}, []int{1, 2, 3, 4}},
 	}
 	for i, test := range tests {
-		tree := New(CmpOrd[int], true)
-		for _, arg := range test.args {
-			tree.Add(arg)
-		}
+		tree := makeTree(true, test.args)
 		if got := tree.Slice(); !reflect.DeepEqual(got, test.want) {
 			t.Errorf("%d: got %v, want %v\n", i, got, test.want)
 		}
@@ -56,10 +50,7 @@ func TestAddNoDups(t *testing.T) {
 func TestAddPermutations(t *testing.T) {
 	want := []int{1, 2, 2, 3, 4}
 	for _, args := range getData() {
-		tree := New(CmpOrd[int], false)
-		for _, arg := range args {
-			tree.Add(arg)
-		}
+		tree := makeTree(false, args)
 		if got := tree.Slice(); !reflect.DeepEqual(got, want) {
 			t.Errorf("%v: got %v, want %v", args, got, want)
 		}
@@ -103,10 +94,7 @@ func TestDel(t *testing.T) {
 		{[]int{4, 3, 2, 2, 1}, []int{1, 2, 3, 4}},
 	}
 	for i, test := range tests {
-		tree := New(CmpOrd[int], false)
-		for _, arg := range test.args {
-			tree.Add(arg)
-		}
+		tree := makeTree(false, test.args)
 		tree.Del(2)
 		if got := tree.Slice(); !reflect.DeepEqual(got, test.want) {
 			t.Errorf("%d: got %v, want %v", i, got, test.want)
@@ -117,10 +105,7 @@ func TestDel(t *testing.T) {
 func TestDelPermutations(t *testing.T) {
 	empty := []int{}
 	for _, args := range getData() {
-		tree := New(CmpOrd[int], false)
-		for _, arg := range args {
-			tree.Add(arg)
-		}
+		tree := makeTree(false, args)
 		for _, arg := range args {
 			tree.Del(arg)
 		}
@@ -179,6 +164,14 @@ func TestCount(t *testing.T) {
 	}
 }
 
+func makeTree(nodups bool, args []int) *Tree[int] {
+	tree := New(CmpOrd[int], nodups)
+	for _, arg := range args {
+		tree.Add(arg)
+	}
+	return tree
+}
+
 func getData() [][]int {
 	f, err := os.Open("test_args.txt")
 	if err != nil {
@@ -198,4 +191,24 @@ func getData() [][]int {
 		result = append(result, sl)
 	}
 	return result
+}
+
+func TestClone(t *testing.T) {
+	tests := []struct {
+		args []int
+		want []int
+	}{
+		{[]int{}, []int{}},
+		{[]int{1}, []int{1}},
+		{[]int{1, 2, 2, 3, 4}, []int{1, 2, 2, 3, 4}},
+		{[]int{2, 1, 3, 2, 4}, []int{1, 2, 2, 3, 4}},
+		{[]int{4, 3, 2, 2, 1}, []int{1, 2, 2, 3, 4}},
+	}
+	for i, test := range tests {
+		tree := makeTree(false, test.args)
+		clone := tree.Clone()
+		if got := clone.Slice(); !reflect.DeepEqual(got, test.want) {
+			t.Errorf("%d: got %v, want %v", i, got, test.want)
+		}
+	}
 }

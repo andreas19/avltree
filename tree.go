@@ -10,8 +10,11 @@ type Tree[T any] struct {
 
 // New creates a new, empty AVL tree. The function cmp is used for comparing values while
 // navigating the tree. If nodups is true, no duplicate values are allowed and Add() will
-// return false if the value is already present.
+// return false if the value is already present. Panics if cmp is nil.
 func New[T any](cmp Cmp[T], nodups bool) *Tree[T] {
+	if cmp == nil {
+		panic("cmp cannot be nil")
+	}
 	return &Tree[T]{cmp: cmp, nodups: nodups}
 }
 

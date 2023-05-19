@@ -212,3 +212,9 @@ func TestClone(t *testing.T) {
 		}
 	}
 }
+
+func TestNewPanic(t *testing.T) {
+	defer func() { recover() }()
+	New[int](nil, false)
+	t.Errorf("did not panic")
+}

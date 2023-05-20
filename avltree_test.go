@@ -218,3 +218,41 @@ func TestNewPanic(t *testing.T) {
 	New[int](nil, false)
 	t.Errorf("did not panic")
 }
+
+func TestGet(t *testing.T) {
+	tree := makeTree(false, []int{1, 2, 3, 2, 4, 2, 3})
+	tests := []struct {
+		arg  int
+		want bool
+	}{
+		{0, false},
+		{1, true},
+		{2, true},
+		{3, true},
+		{4, true},
+	}
+	for i, test := range tests {
+		if got, ok := tree.Get(test.arg); got != test.arg || ok != test.want {
+			t.Errorf("%d: got %v and %t, want %v and %t", i, got, ok, test.arg, test.want)
+		}
+	}
+}
+
+func TestGetAll(t *testing.T) {
+	tree := makeTree(false, []int{1, 2, 3, 2, 4, 2, 3})
+	tests := []struct {
+		arg  int
+		want []int
+	}{
+		{0, []int{}},
+		{1, []int{1}},
+		{2, []int{2, 2, 2}},
+		{3, []int{3, 3}},
+		{4, []int{4}},
+	}
+	for i, test := range tests {
+		if got := tree.GetAll(test.arg); !reflect.DeepEqual(got, test.want) {
+			t.Errorf("%d: got %v, want %v", i, got, test.want)
+		}
+	}
+}

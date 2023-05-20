@@ -62,6 +62,33 @@ func (t *Tree[T]) Contains(v T) bool {
 	return false
 }
 
+// Get gets the first value that is equal to v regarding the [Cmp] function.
+func (t *Tree[T]) Get(v T) (T, bool) {
+	node := t.root
+	for node != nil {
+		if t.cmp(v, node.value) < 0 {
+			node = node.left
+		} else if t.cmp(v, node.value) > 0 {
+			node = node.right
+		} else {
+			return node.value, true
+		}
+	}
+	var result T
+	return result, false
+}
+
+// GetAll gets all values that are equal to v regarding the [Cmp] function.
+func (t *Tree[T]) GetAll(v T) []T {
+	result := []T{}
+	t.Each(func(x T) {
+		if t.cmp(v, x) == 0 {
+			result = append(result, x)
+		}
+	})
+	return result
+}
+
 // Slice returns a slice with all values from the tree. The values will be sorted
 // with regard to the [Cmp] function.
 func (t *Tree[T]) Slice() []T {
@@ -92,7 +119,7 @@ func (t *Tree[T]) Count() int {
 	return t.count
 }
 
-// Clone clones the tree.
+// Clone clones the tree. This method only makes shallow copies of the elements.
 func (t *Tree[T]) Clone() *Tree[T] {
 	var root *tNode[T]
 	if t.root != nil {

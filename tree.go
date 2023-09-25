@@ -74,8 +74,7 @@ func (t *Tree[T]) Get(v T) (T, bool) {
 			return node.value, true
 		}
 	}
-	var result T
-	return result, false
+	return *new(T), false
 }
 
 // GetAll gets all values that are equal to v regarding the [Cmp] function.
@@ -119,7 +118,7 @@ func (t *Tree[T]) Count() int {
 	return t.count
 }
 
-// Clone clones the tree. This method only makes shallow copies of the elements.
+// Clone clones the tree. This method only makes shallow copies of the values.
 func (t *Tree[T]) Clone() *Tree[T] {
 	var root *tNode[T]
 	if t.root != nil {

@@ -1,3 +1,3 @@
 module github.com/andreas19/avltree
 
-go 1.21
+go 1.23

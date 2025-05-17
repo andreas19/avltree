@@ -1,5 +1,7 @@
 package avltree
 
+import "iter"
+
 // An AVL tree.
 type Tree[T any] struct {
 	root   *tNode[T]
@@ -98,6 +100,32 @@ func (t *Tree[T]) Slice() []T {
 		})
 	}
 	return sl
+}
+
+// Iter returns an iterator over all values from the tree. The values will be sorted
+// with regard to the [Cmp] function.
+func (t *Tree[T]) Iter() iter.Seq[T] {
+	return func(yield func(T) bool) {
+		if t.root != nil {
+			if iterTree(t.root, yield) {
+				return
+			}
+		}
+	}
+}
+
+// returns stop
+func iterTree[T any](n *tNode[T], yield func(T) bool) bool {
+	if n.left != nil && iterTree(n.left, yield) {
+		return true
+	}
+	if !yield(n.value) {
+		return true
+	}
+	if n.right != nil && iterTree(n.right, yield) {
+		return true
+	}
+	return false
 }
 
 // Each traverses the tree in-order and applies fn to each value.

@@ -20,6 +20,17 @@ func New[T any](cmp Cmp[T], nodups bool) *Tree[T] {
 	return &Tree[T]{cmp: cmp, nodups: nodups}
 }
 
+// Collect creates a new AVL tree with values from seq. The function cmp is used for comparing values while
+// navigating the tree. If nodups is true, no duplicate values are allowed and Add() will
+// return false if the value is already present. Panics if cmp is nil.
+func Collect[T any](cmp Cmp[T], nodups bool, seq iter.Seq[T]) *Tree[T] {
+	t := New(cmp, nodups)
+	for v := range seq {
+		t.Add(v)
+	}
+	return t
+}
+
 // Add adds a value to the tree.
 func (t *Tree[T]) Add(v T) bool {
 	if t.root == nil {
